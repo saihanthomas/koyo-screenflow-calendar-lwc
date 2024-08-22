@@ -4,7 +4,7 @@ import flatpickrjs from '@salesforce/resourceUrl/flatpickrjs';
 import flatpickrcss from '@salesforce/resourceUrl/flatpickrcss';
 
 export default class DatesSelector extends LightningElement {
-    @track displayedFormattedDates = ''; // displayed dates at front
+    displayedFormattedDates; // Non-reactive property // displayed dates at front
     @api datesGroup1; // First set of dates for Flow
     @api datesGroup2; // Second set of dates for Flow
     @api datesGroup3; // Third set of dates for Flow
@@ -56,31 +56,27 @@ export default class DatesSelector extends LightningElement {
             locale: this.japaneseLocale,
             dateFormat: "Ymd",
             mode: "multiple",
-            static: true, // Keep the calendar view static
-            onChange: this.handleDateChange.bind(this)
+            onChange: (selectedDates) => {
+                if (selectedDates.length > 0) {
+                    // sort the selected dates
+                    selectedDates.sort((a, b) => a - b);
+                    // Format dates to "YYMMDD"
+                    const formatted = selectedDates.map(date => 
+                        date.toLocaleDateString('en-CA').replace(/-/g, '').slice(2) // 'en-CA' uses YYYY-MM-DD, slice off the century
+                    );
+
+                    // Display formatted dates
+                    this.displayedFormattedDates = formatted.join(', ').replace(/(\d{2})(\d{2})(\d{2})/g, '20$1/$2/$3');
+
+                    // Split formatted dates into groups of 42
+                    this.datesGroup1 = formatted.slice(0, 42).join('');
+                    this.datesGroup2 = formatted.slice(42, 84).join('');
+                    this.datesGroup3 = formatted.slice(84, 126).join('');
+                    
+                    // Manually update the DOM element for display
+                    this.template.querySelector('.selected-dates').textContent = this.displayedFormattedDates;
+                }
+            }
         });
-    }
-
-    handleDateChange(selectedDates) {
-        // Sort dates from earliest to latest
-        selectedDates.sort((a, b) => a - b);
-
-        // Format dates to "YYMMDD"
-        const formatted = selectedDates.map(date => 
-            date.toLocaleDateString('en-CA').replace(/-/g, '').slice(2) // 'en-CA' uses YYYY-MM-DD, slice off the century
-        );
-
-        // Display formatted dates
-        this.displayedFormattedDates = formatted.join(', ').replace(/(\d{2})(\d{2})(\d{2})/g, '20$1/$2/$3');
-
-        // Split formatted dates into groups of 42
-        this.datesGroup1 = formatted.slice(0, 42).join('');
-        this.datesGroup2 = formatted.slice(42, 84).join('');
-        this.datesGroup3 = formatted.slice(84, 126).join('');
-
-        // console.log('Selected dates:', this.displayedFormattedDates);
-        // console.log('Group 1 Dates:', this.datesGroup1);
-        // console.log('Group 2 Dates:', this.datesGroup2);
-        // console.log('Group 3 Dates:', this.datesGroup3);
     }
 }
