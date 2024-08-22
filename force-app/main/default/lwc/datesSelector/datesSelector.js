@@ -5,7 +5,7 @@ import flatpickrcss from '@salesforce/resourceUrl/flatpickrcss';
 
 export default class DatesSelector extends LightningElement {
     @track formattedDates = '';
-    
+
     japaneseLocale = {
         weekdays: {
             shorthand: ["日", "月", "火", "水", "木", "金", "土"],
@@ -53,6 +53,7 @@ export default class DatesSelector extends LightningElement {
             locale: this.japaneseLocale,
             dateFormat: "Ymd",
             mode: "multiple",
+            static: true, // Keep the calendar view static
             onChange: this.handleDateChange.bind(this)
         });
     }
