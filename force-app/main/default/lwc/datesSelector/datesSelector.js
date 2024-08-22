@@ -1,13 +1,11 @@
-import { LightningElement, track, api } from 'lwc';
+import { LightningElement, api } from 'lwc';
 import { loadStyle, loadScript } from 'lightning/platformResourceLoader';
 import flatpickrjs from '@salesforce/resourceUrl/flatpickrjs';
 import flatpickrcss from '@salesforce/resourceUrl/flatpickrcss';
 
 export default class DatesSelector extends LightningElement {
     displayedFormattedDates; // Non-reactive property // displayed dates at front
-    @api datesGroup1; // First set of dates for Flow
-    @api datesGroup2; // Second set of dates for Flow
-    @api datesGroup3; // Third set of dates for Flow
+    @api selectedDatesList = []; // hold the array of formatted dates
 
     japaneseLocale = {
         weekdays: {
@@ -60,18 +58,14 @@ export default class DatesSelector extends LightningElement {
                 if (selectedDates.length > 0) {
                     // sort the selected dates
                     selectedDates.sort((a, b) => a - b);
-                    // Format dates to "YYMMDD"
-                    const formatted = selectedDates.map(date => 
-                        date.toLocaleDateString('en-CA').replace(/-/g, '').slice(2) // 'en-CA' uses YYYY-MM-DD, slice off the century
+
+                    // Format dates to "YYYYMMDD"
+                    this.selectedDatesList = selectedDates.map(date => 
+                        date.toLocaleDateString('en-CA').replace(/-/g, '').slice(0)
                     );
 
                     // Display formatted dates
-                    this.displayedFormattedDates = formatted.join(', ').replace(/(\d{2})(\d{2})(\d{2})/g, '20$1/$2/$3');
-
-                    // Split formatted dates into groups of 42
-                    this.datesGroup1 = formatted.slice(0, 42).join('');
-                    this.datesGroup2 = formatted.slice(42, 84).join('');
-                    this.datesGroup3 = formatted.slice(84, 126).join('');
+                    this.displayedFormattedDates = this.selectedDatesList.join(', ').replace(/(\d{4})(\d{2})(\d{2})/g, '$1/$2/$3');
                     
                     // Manually update the DOM element for display
                     this.template.querySelector('.selected-dates').textContent = this.displayedFormattedDates;
