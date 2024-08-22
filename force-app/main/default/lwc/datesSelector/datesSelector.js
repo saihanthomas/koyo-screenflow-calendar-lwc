@@ -4,7 +4,10 @@ import flatpickrjs from '@salesforce/resourceUrl/flatpickrjs';
 import flatpickrcss from '@salesforce/resourceUrl/flatpickrcss';
 
 export default class DatesSelector extends LightningElement {
-    @track formattedDates = '';
+    @track displayedFormattedDates = ''; // displayed dates at front
+    @api datesGroup1; // First set of dates for Flow
+    @api datesGroup2; // Second set of dates for Flow
+    @api datesGroup3; // Third set of dates for Flow
 
     japaneseLocale = {
         weekdays: {
@@ -62,11 +65,22 @@ export default class DatesSelector extends LightningElement {
         // Sort dates from earliest to latest
         selectedDates.sort((a, b) => a - b);
 
-        // Format dates to "YYYY/MM/DD"
-        this.formattedDates = selectedDates.map(date => {
-            return date.toLocaleDateString('en-CA'); // 'en-CA' uses YYYY-MM-DD format, which we then replace
-        }).join(', ').replace(/-/g, '/');
+        // Format dates to "YYMMDD"
+        const formatted = selectedDates.map(date => 
+            date.toLocaleDateString('en-CA').replace(/-/g, '').slice(2) // 'en-CA' uses YYYY-MM-DD, slice off the century
+        );
 
-        console.log('Selected dates:', this.formattedDates);
+        // Display formatted dates
+        this.displayedFormattedDates = formatted.join(', ').replace(/(\d{2})(\d{2})(\d{2})/g, '20$1/$2/$3');
+
+        // Split formatted dates into groups of 42
+        this.datesGroup1 = formatted.slice(0, 42).join('');
+        this.datesGroup2 = formatted.slice(42, 84).join('');
+        this.datesGroup3 = formatted.slice(84, 126).join('');
+
+        // console.log('Selected dates:', this.displayedFormattedDates);
+        // console.log('Group 1 Dates:', this.datesGroup1);
+        // console.log('Group 2 Dates:', this.datesGroup2);
+        // console.log('Group 3 Dates:', this.datesGroup3);
     }
 }

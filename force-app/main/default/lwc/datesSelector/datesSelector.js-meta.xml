@@ -5,4 +5,11 @@
     <targets>
         <target>lightning__FlowScreen</target>
     </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            <property name="datesGroup1" type="String" role="outputOnly" label="Dates Group 1" />
+            <property name="datesGroup2" type="String" role="outputOnly" label="Dates Group 2" />
+            <property name="datesGroup3" type="String" role="outputOnly" label="Dates Group 3" />
+        </targetConfig>
+    </targetConfigs>
 </LightningComponentBundle>
