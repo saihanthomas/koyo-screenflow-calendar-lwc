@@ -1,9 +1,11 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, track, api } from 'lwc';
 import { loadStyle, loadScript } from 'lightning/platformResourceLoader';
 import flatpickrjs from '@salesforce/resourceUrl/flatpickrjs';
 import flatpickrcss from '@salesforce/resourceUrl/flatpickrcss';
 
 export default class DatesSelector extends LightningElement {
+    @track formattedDates = '';
+    
     japaneseLocale = {
         weekdays: {
             shorthand: ["日", "月", "火", "水", "木", "金", "土"],
@@ -56,7 +58,14 @@ export default class DatesSelector extends LightningElement {
     }
 
     handleDateChange(selectedDates) {
-        // Triggered when dates are selected; format and handle data as needed
-        console.log('Selected dates:', selectedDates);
+        // Sort dates from earliest to latest
+        selectedDates.sort((a, b) => a - b);
+
+        // Format dates to "YYYY/MM/DD"
+        this.formattedDates = selectedDates.map(date => {
+            return date.toLocaleDateString('en-CA'); // 'en-CA' uses YYYY-MM-DD format, which we then replace
+        }).join(', ').replace(/-/g, '/');
+
+        console.log('Selected dates:', this.formattedDates);
     }
 }

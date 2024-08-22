@@ -1,0 +1,14 @@
+.selected-dates {
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #000; /* Make it black to ensure visibility */
+    background-color: #fff; /* Background color */
+    color: #000; /* Font color */
+    width: 100%; /* Ensure it spans the full width */
+}
+
+@media (max-width: 600px) {
+    .selected-dates {
+        word-wrap: break-word; /* Ensure that dates wrap to the next line if space is limited */
+    }
+}
